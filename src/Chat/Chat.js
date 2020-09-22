@@ -5,6 +5,7 @@ import ChatBox from './ChatBox/ChatBox';
 import ChatInput from './ChatInput/ChatInput';
 import shopData from '../data/shop.json';
 import answersData from '../data/answers.json';
+import { ROLE } from '../constants'
 
 class Chat extends Component {
   constructor(props, context) {
@@ -27,13 +28,32 @@ class Chat extends Component {
     }, 1000);
   }
 
+  concatMessage = (msg) => {
+    const message = {
+      text:msg,
+      role:ROLE.CUSTOMER,
+      tags:msg
+    }
+    let answerArray = [];
+    answersData.find((answer) => answer.tags.forEach(      
+      (tag) => {
+        if(msg.includes(tag)){
+          answerArray.push(answer);
+        }
+      }
+    ));
+    this.setState({
+      messages: [...this.state.messages,message,...answerArray]
+    });
+  }
+
   render() {
     const { shop, messages } = this.state;
     return (
       <main className="Chat">
         <ChatHeader shop={shop} />
         <ChatBox messages={messages} />
-        <ChatInput />
+        <ChatInput concatMessage={this.concatMessage}/>
       </main>
     );
   }
